@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="grid_layout_span_potrait">2</integer>
+    <integer name="grid_layout_span_landscape">3</integer>
+
+</resources>

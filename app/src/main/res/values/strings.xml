@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">MemoryRecall</string>
+    <string name="foodFragment">Food</string>
+    <string name="peopleFragment">People</string>
+    <string name="thingsFragment">Things</string>
+    <string name="placesFragment">Places</string>
+
+    <!-- Tilte of tabs -->
+    <string name="foodTab">Food</string>
+    <string name="peopleTab">People</string>
+    <string name="placesTab">Places</string>
+    <string name="thingsTab">Things</string>
+
+    <string name="add">Add</string>
+
+    <string name="buttonSave">Save</string>
+    <string name="buttonCancel">Cancel</string>
+    <string name="buttonDelete">Delete</string>
+
+</resources>
