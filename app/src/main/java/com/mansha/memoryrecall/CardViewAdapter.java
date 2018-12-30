@@ -68,6 +68,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         CardView cardView = holder.cardView;
         ImageView imageView = (ImageView)cardView.findViewById(R.id.info_image);
         TextView textView = (TextView)cardView.findViewById(R.id.info_text);
+        ImageView soundFlag = (ImageView)cardView.findViewById(R.id.soundFlag);
 
         if (cursor == null) {
 
@@ -83,6 +84,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
             imageView.setImageBitmap(bitmap);
             imageView.setContentDescription(cursor.getString(0));
+            if (cursor.getString(2)== null){
+                soundFlag.setVisibility(View.INVISIBLE);
+            }
 
 
 //            byte[] byteArray = cursor.getBlob(1);
