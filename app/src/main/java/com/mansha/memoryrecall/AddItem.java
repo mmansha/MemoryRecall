@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -19,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -107,9 +110,6 @@ public class AddItem extends AppCompatActivity {
 
     }
 
-//    public String getGuid() {
-//        return guid;
-//    }
 
     public void getImageFromGallery(View view){
         Log.d("AddItem", "Image clicked");
@@ -118,15 +118,6 @@ public class AddItem extends AppCompatActivity {
         intent.setType("image/*");
         startActivityForResult(intent, 100);
     }
-
-//    public void setAudioFileName(String fileName){
-//        if (fileName.compareToIgnoreCase("BLANK") != 0){
-//            pathToAudioFile = fileName;
-//        }
-//        Log.d("AddItem", "Audio file name " + pathToAudioFile);
-//        File file = new File(pathToAudioFile);
-//        Log.d("AddItem", "File size  = " + file.length());
-//    }
 
 
     protected void enablePlayButton(boolean enable,String... options){
@@ -170,18 +161,25 @@ public class AddItem extends AppCompatActivity {
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
 
+
+
                         //Create a temp file
 //                        File file = new File(getCacheDir(), guid);
                         String imageFileName = getDataDir().getAbsolutePath() + "/" + guid + ".jpg";
                         File file = new File(imageFileName);
+
 //                        File file = new File(getDataDir().getAbsolutePath(), guid);
                         FileOutputStream fileOutputStream = new FileOutputStream(file);
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
                         //Compress the image
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 20, fileOutputStream);
                         fileOutputStream.close();
+
+
                         imagePath = file.getAbsolutePath();
                         Log.d("AddItem", "file path " + imagePath);
+
                         imageView.setImageBitmap(bitmap);
                     }catch (IOException e){
                         e.printStackTrace();
@@ -189,6 +187,8 @@ public class AddItem extends AppCompatActivity {
                 }
         }
     }
+
+
 
     public  void saveEntity(View view){
         Entity entityCreated;
