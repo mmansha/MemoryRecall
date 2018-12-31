@@ -160,24 +160,15 @@ public class AddItem extends AppCompatActivity {
 
                     try {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-
-
-
-                        //Create a temp file
-//                        File file = new File(getCacheDir(), guid);
                         String imageFileName = getDataDir().getAbsolutePath() + "/" + guid + ".jpg";
                         File file = new File(imageFileName);
-
-//                        File file = new File(getDataDir().getAbsolutePath(), guid);
+                        imagePath = file.getAbsolutePath();
                         FileOutputStream fileOutputStream = new FileOutputStream(file);
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
                         //Compress the image
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 20, fileOutputStream);
                         fileOutputStream.close();
-
-
-                        imagePath = file.getAbsolutePath();
                         Log.d("AddItem", "file path " + imagePath);
 
                         imageView.setImageBitmap(bitmap);
