@@ -44,7 +44,6 @@ public class PeopleFragment extends Fragment {
         context = inflater.getContext();
         View view = inflater.inflate(R.layout.people_recyclerview_fragment, container, false);
         peopleRecycler = (RecyclerView)view.findViewById(R.id.people_recyclerview_fragment);
-//        peopleRecycler = (RecyclerView)inflater.inflate(R.layout.people_recyclerview_fragment, container, false);
         final DatabaseHelper dbHelper = DatabaseHelper.getsDBInstance(context);
 
         try {
@@ -82,11 +81,9 @@ public class PeopleFragment extends Fragment {
 
             @Override
             public void onLongClick(int position) {
-                Log.d("PeopleFragment", "Long click listener pressed");
                 Cursor localCursor = dbHelper.getCursor(db, categoryName);
                 localCursor.moveToPosition(position);
                 Entity entity = new Entity(localCursor.getString(0), localCursor.getString(1), localCursor.getString(2), localCursor.getString(4));
-                Log.d("PeopleFragment", "Entity name " + entity.getEntityName());
                 Activity addItemActivity  = getActivity();
                 Intent intent = new Intent(addItemActivity, AddItem.class);
                 intent.putExtra("Entity", entity);

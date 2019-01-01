@@ -16,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -26,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
     private SQLiteDatabase db;
     private boolean permissionToRecordAccepted = false;
-    private String[] permissions = {Manifest.permission.RECORD_AUDIO};
+    private String[] permissions = {Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
 
     @Override
@@ -36,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
             case REQUEST_RECORD_AUDIO_PERMISSION:
                 permissionToRecordAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                 break;
+            //case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+
         }
     }
 
@@ -119,20 +120,15 @@ public class MainActivity extends AppCompatActivity {
 
             //For deleting existing entry
             if(resultCode == RESULT_FIRST_USER){
-                Log.d("MainActivity", "Get result code " + resultCode);
                 String guidForDeleteEntity;
                 Bundle bundle = data.getExtras();
-                Log.d("MainActivity", "Is bundle null " + bundle.isEmpty());
                 if(bundle != null){
                     guidForDeleteEntity = bundle.getString("GUID");
-                    Log.d("MainActivity", "Guid for deleted entity " + guidForDeleteEntity);
                     DatabaseHelper databaseHelper = DatabaseHelper.getsDBInstance(this);
                     SQLiteDatabase db = databaseHelper.getWritableDatabase();
                     if (db != null && guidForDeleteEntity != null) {
                         databaseHelper.deleteRow(db, guidForDeleteEntity);
                     }
-//                    db.close();
-//                    databaseHelper.close();
                 }
 
             }

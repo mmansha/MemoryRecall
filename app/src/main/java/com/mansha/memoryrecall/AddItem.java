@@ -1,7 +1,11 @@
 package com.mansha.memoryrecall;
 
 import android.app.Activity;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -9,6 +13,7 @@ import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,12 +25,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class AddItem extends AppCompatActivity {
 
@@ -56,8 +63,6 @@ public class AddItem extends AppCompatActivity {
         Intent intent = getIntent();
 
 
-        Log.d("AddItem", "Is budle null " + savedInstanceState == null? "True" : "False");
-        Log.d("AddItem", "Bundle contain key " + intent.hasExtra("Entity"));
         entity =  intent.getParcelableExtra("Entity");
         if (entity == null) {
             //New entity
@@ -69,7 +74,6 @@ public class AddItem extends AppCompatActivity {
             //Update or delete existing entity
             guid = entity.getEntityGuid();
             mediaFileName = entity.getEntitySoundFile();
-            Log.d("AddItem", "Media file " + mediaFileName + ". Guid " + guid);
             imagePath = entity.getEntityImage();
             pathToAudioFile = entity.getEntitySoundFile();
             captionEntered = entity.getEntityName();
@@ -77,11 +81,9 @@ public class AddItem extends AppCompatActivity {
             showContentsInView();
         }
 
-        Log.d("AddItem", "Media filename " + mediaFileName);
         //Disable start playing button if no audio file exists
         if (mediaFileName != null){
             File audioFile = new File(mediaFileName);
-            Log.d("AddItem", "Media exists " + audioFile.exists());
             if (audioFile.exists()){
                 enablePlayButton(true, new String[]{"PLAY", "STOP"});
             } else {
@@ -94,11 +96,9 @@ public class AddItem extends AppCompatActivity {
 
 
     public void showContentsInView(){
-        Log.d("AddItem", "Caption entered " + captionEntered);
         EditText editText = (EditText)findViewById(R.id.addtext);
         editText.setText(captionEntered);
         imageView = (ImageView)findViewById(R.id.addimage);
-        Log.d("AddItem", "Image path " + imagePath);
         if (imagePath != null) {
             File imgFile = new File(imagePath);
             if (imgFile.exists()) {
@@ -112,7 +112,6 @@ public class AddItem extends AppCompatActivity {
 
 
     public void getImageFromGallery(View view){
-        Log.d("AddItem", "Image clicked");
         imageView = (ImageView)findViewById(R.id.addimage);
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -151,39 +150,73 @@ public class AddItem extends AppCompatActivity {
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case 100:
-                if(resultCode == RESULT_OK){
-                    Uri selectedImage = data.getData();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-                        String imageFileName = getDataDir().getAbsolutePath() + "/" + guid + ".jpg";
-                        File file = new File(imageFileName);
-                        imagePath = file.getAbsolutePath();
-                        FileOutputStream fileOutputStream = new FileOutputStream(file);
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        if (resultCode == Activity.RESULT_OK && requestCode == 100) {
 
-                        //Compress the image
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, fileOutputStream);
-                        fileOutputStream.close();
-                        Log.d("AddItem", "file path " + imagePath);
+            // Get selected gallery image
+            Uri selectedPicture = data.getData();
+            String wholeID = DocumentsContract.getDocumentId(selectedPicture);
+            // Split at colon, use second item in the array
+            String id = wholeID.split(":")[1];
+            String sel = MediaStore.Images.Media._ID + "=?";
 
-                        imageView.setImageBitmap(bitmap);
-                    }catch (IOException e){
-                        e.printStackTrace();
-                    }
-                }
+            // Get and resize profile image
+            String[] filePathColumn = {MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.ORIENTATION};
+            Cursor cursor = getContentResolver().
+                    query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            filePathColumn, sel, new String[]{ id }, null);
+
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            int orientationIndex = cursor.getColumnIndex(filePathColumn[2]);
+            String picturePath = cursor.getString(columnIndex);
+            int orientation = cursor.getInt(orientationIndex);
+            cursor.close();
+
+            Bitmap loadedBitmap = BitmapFactory.decodeFile(picturePath);
+
+            switch (orientation) {
+                case 90:
+                    loadedBitmap = rotateBitmap(loadedBitmap, 90);
+                    break;
+                case 180:
+                    loadedBitmap = rotateBitmap(loadedBitmap, 180);
+                    break;
+
+                case 270:
+                    loadedBitmap = rotateBitmap(loadedBitmap, 270);
+                    break;
+            }
+
+            imageView.setImageBitmap(loadedBitmap);
+
+            try {
+                String imageFileName = getDataDir().getAbsolutePath() + "/" + guid + ".jpg";
+                File file = new File(imageFileName);
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+                //Compress the image
+                loadedBitmap.compress(Bitmap.CompressFormat.JPEG, 20, fileOutputStream);
+                fileOutputStream.close();
+                imagePath = file.getAbsolutePath();
+            } catch (IOException e){
+
+            }
+
         }
     }
 
-
+    public static Bitmap rotateBitmap(Bitmap bitmap, int degrees) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degrees);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
 
     public  void saveEntity(View view){
         Entity entityCreated;
-        Log.d("AddItem", "Save button clicked");
         EditText editText = (EditText)findViewById(R.id.addtext);
         captionEntered = editText.getText().toString();
         Intent intent = new Intent();

@@ -31,14 +31,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private DatabaseHelper(Context context){
         super(context, DB_NAME, null, DB_VERSION);
-        Log.d("DatabaseHelper", "Database Helper constructor called");
         this.context = context;
 //       context.deleteDatabase("memoryrecalldb");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.d("DatabaseHelper", "OnCreate methrod called");
 
         updateMyDatabase(db, 0, DB_VERSION);
     }
@@ -49,7 +47,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void updateMyDatabase(SQLiteDatabase db, int oldVersion, int newVersion){
-        Log.d("DatabaseHelper", "Update my database called");
         if (oldVersion < 1){
             db.execSQL("Create table MemoryRecall (" +
                             "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -74,7 +71,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Bitmap bitmap = bitmapDrawable.getBitmap();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] image = baos.toByteArray();
-        Log.d("DatabaseHelper", "Byte array size = " + image.length);
         return image;
 
 
@@ -90,7 +86,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         dbValues.put("SOUND", sound);
         dbValues.put("SEQ", seq);
         db.insert("MemoryRecall", null, dbValues);
-        Log.d("DatabaseHelper", "Inserted record into Database");
     }
 
     protected   void insertData(SQLiteDatabase db, String category, String guid, String name, String imageIdPath, String soundFilePath, int seq){
@@ -103,7 +98,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         dbValues.put("SOUND", soundFilePath);
         dbValues.put("SEQ", seq);
         db.insert("MemoryRecall", null, dbValues);
-        Log.d("DatabaseHelper", "Inserted record into Database");
     }
 
     protected   void updateData(SQLiteDatabase db, String category, String guid, String name, String imageIdPath, String soundFilePath, int seq){
@@ -115,13 +109,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         dbValues.put("SOUND", soundFilePath);
         dbValues.put("SEQ", seq);
         db.update("MemoryRecall", dbValues, "GUID=?", new String[]{guid});
-        Log.d("DatabaseHelper", "Inserted record into Database");
     }
 
     protected int deleteRow(SQLiteDatabase db, String guidToDetele){
         int returnValue = 0;
         returnValue = db.delete("MemoryRecall", "GUID=?", new String[]{guidToDetele});
-        Log.d("DatabaseHelper", "Number of rows deleted " + returnValue);
         return returnValue;
     }
 

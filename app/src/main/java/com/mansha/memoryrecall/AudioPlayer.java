@@ -19,7 +19,6 @@ public class AudioPlayer {
 
     public void setAudioFile(String audioFile){
         this.audioFile = audioFile;
-        Log.d("AudioPlayer", "Audio file " + audioFile);
 
     }
 
@@ -27,7 +26,6 @@ public class AudioPlayer {
         try {
             //mp = MediaPlayer.create(this.view.getContext(), R.raw.cat_meow);
             MediaPlayer mPlayer = new MediaPlayer();
-            Log.d("AudioPlayer", "Audio File = " + audioFile);
             mPlayer.setDataSource(audioFile);
             mPlayer.prepare();
             mPlayer.start();
@@ -42,7 +40,6 @@ public class AudioPlayer {
                 }
             });
         } catch (IOException e){
-            Log.d("AudioPlayer", "File IO Exception " + e.toString());
         }
 
     }
