@@ -111,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
                         databaseHelper.insertData(db, currentTabSelected, entityCreated.entityGuid, entityCreated.entityName, entityCreated.entityImageFile, entityCreated.entitySoundFile, 0);
                     } else {
                         databaseHelper.updateData(db, currentTabSelected, entityCreated.entityGuid, entityCreated.entityName, entityCreated.entityImageFile, entityCreated.entitySoundFile, 0);
+                        databaseHelper.getCursor(db, currentTabSelected);
+//                        databaseHelper.notify();
                     }
                 }
 //                db.close();

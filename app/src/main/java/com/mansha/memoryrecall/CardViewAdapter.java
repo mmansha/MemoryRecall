@@ -89,13 +89,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
             }
 
 
-//            byte[] byteArray = cursor.getBlob(1);
-//            if (byteArray != null && byteArray.length > 0 ) {
-//                Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-//                imageView.setImageBitmap(bitmap);
-//                imageView.setContentDescription(cursor.getString(0));
-//            }
-
         }
 
 
