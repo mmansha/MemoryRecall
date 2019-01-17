@@ -74,6 +74,10 @@ public class AddItem extends AppCompatActivity {
             //Update or delete existing entity
             guid = entity.getEntityGuid();
             mediaFileName = entity.getEntitySoundFile();
+            if (mediaFileName == null){
+                mediaFileName = getDataDir().getAbsolutePath();
+                mediaFileName += "/" + guid + ".3pg";
+            }
             imagePath = entity.getEntityImage();
             pathToAudioFile = entity.getEntitySoundFile();
             captionEntered = entity.getEntityName();
@@ -281,7 +285,7 @@ public class AddItem extends AppCompatActivity {
             mRecorder.prepare();
             mRecorder.start();
         }catch (IOException e){
-            Log.e("AddItem", "Prepare() failed");
+            Log.e("AddItem", "Prepare() failed with exception " + e.toString());
         }
 
     }
@@ -331,9 +335,11 @@ public class AddItem extends AppCompatActivity {
     }
 
     private void stopPlaying(){
-        mPlayer.release();
-        mPlayer = null;
-        enablePlayButton(true, new String[]{"RECORD", "PLAY"});
+        if (mPlayer != null) {
+            mPlayer.release();
+            mPlayer = null;
+            enablePlayButton(true, new String[]{"RECORD", "PLAY"});
+        }
     }
 
 
