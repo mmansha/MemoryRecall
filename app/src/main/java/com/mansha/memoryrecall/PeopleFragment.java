@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -44,6 +45,9 @@ public class PeopleFragment extends Fragment {
         context = inflater.getContext();
         View view = inflater.inflate(R.layout.people_recyclerview_fragment, container, false);
         peopleRecycler = (RecyclerView)view.findViewById(R.id.people_recyclerview_fragment);
+        peopleRecycler.setItemViewCacheSize(20);
+        peopleRecycler.setDrawingCacheEnabled(true);
+        peopleRecycler.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         final DatabaseHelper dbHelper = DatabaseHelper.getsDBInstance(context);
 
         try {
@@ -53,6 +57,8 @@ public class PeopleFragment extends Fragment {
             Toast toast = Toast.makeText(context, "Database unavailable", Toast.LENGTH_SHORT);
             toast.show();
         }
+
+
 
         CardViewAdapter cardViewAdapter = new CardViewAdapter(cursor);
         peopleRecycler.setAdapter(cardViewAdapter);
